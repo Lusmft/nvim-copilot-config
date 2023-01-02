@@ -68,4 +68,4 @@ If you find anything that needs improving, do not hesitate to point it out or cr
 If you come across an issue, you can first use `:checkhealth` command provided by `nvim` to trouble-shoot yourself.
 Please read carefully the messages provided by health check.
 
-If you still have an issue, [open a new issue](https://github.com/lusmft/nvim-copilot-config/issues).
+If you still have an issue, [open a new issue](https://github.com/Lusmft/nvim-copilot-config/issues).
