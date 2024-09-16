@@ -21,7 +21,7 @@ Plug 'scrooloose/nerdtree'              " Project and file navigation
 "Plug 'lewis6991/gitsigns.nvim'          " Git signs / Не получилось инициировать
 Plug 'simnalamburt/vim-mundo'            " Undo Tree
 Plug 'Raimondi/delimitMate'              " Auto closings of brackets, quotes, etc..
-Plug 'petobens/poet-v'                   " Poet.vim - A simple, fast, and powerful vim plugin for poetry
+"Plug 'petobens/poet-v'                   " Poet.vim - A simple, fast, and powerful vim plugin for poetry
 
 "------------------=== Внешний вид ===----------------------
 Plug 'vim-airline/vim-airline'          " Statusline
@@ -49,7 +49,7 @@ Plug 'gelguy/wilder.nvim', { 'do': function('UpdateRemotePlugins') }       " Aut
 
 " --- Python ---
 Plug 'klen/python-mode'               " Python mode (docs, refactor, lints, highlighting, run and ipdb and more)
-Plug 'davidhalter/jedi-vim'           " Jedi-vim autocomplete plugin
+"Plug 'davidhalter/jedi-vim'           " Jedi-vim autocomplete plugin
 Plug 'mitsuhiko/vim-python-combined'  " Python syntax highlighting
 Plug 'lepture/vim-jinja'	      " Jinja2 syntax highlighting
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " Treesitter
@@ -309,8 +309,12 @@ nnoremap <F5> :MundoToggle<CR>
 " --- Jedi ---
 let g:jedi#popup_on_dot = 1
 
+" --- Pymode ---
+let g:pymode_python = 'python3'
+let g:python3_host_prog = '/usr/bin/python3'
+
 " --- Poet-v ---
-autocmd FileType python PoetvActivate
+"autocmd FileType python PoetvActivate
 
 " --- Highlights ---
 autocmd FileType python,lua,vim highlight Comment ctermfg=Green
