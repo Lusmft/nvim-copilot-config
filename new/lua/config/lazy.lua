@@ -1,0 +1,277 @@
+-- Bootstrap lazy.nvim
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
+  local lazyrepo = "https://github.com/folke/lazy.nvim.git"
+  local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+  if vim.v.shell_error ~= 0 then
+    vim.api.nvim_echo({
+      { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
+      { out, "WarningMsg" },
+      { "\nPress any key to exit..." },
+    }, true, {})
+    vim.fn.getchar()
+    os.exit(1)
+  end
+end
+vim.opt.rtp:prepend(lazypath)
+
+-- Make sure to setup `mapleader` and `maplocalleader` before
+-- loading lazy.nvim so that mappings are correct.
+-- This is also a good place to setup other settings (vim.opt)
+vim.g.mapleader = " "
+vim.g.maplocalleader = "\\"
+
+-- =======================
+-- ⚙️ Общие настройки
+-- =======================
+vim.opt.syntax = "on"
+vim.opt.splitright = true
+vim.opt.splitbelow = true
+vim.opt.backspace = { "indent", "eol", "start" }
+vim.opt.mousemodel = "popup"
+vim.g.no_buffers_menu = 1
+vim.cmd("filetype plugin indent on")
+
+-- Set default colorscheme
+vim.cmd.colorscheme("habamax")
+
+-- Отображение позиции курсора (строка/столбец)
+vim.opt.ruler = true
+
+-- Убираем preview window в автодополнении
+vim.opt.completeopt:remove("preview")
+
+-- Отключаем мигание курсора
+vim.opt.guicursor = "a:blinkon0"
+
+-- Быстрая отрисовка в терминале
+vim.opt.ttyfast = true
+
+-- При запуске: открытие всех табов в сплите
+vim.cmd("tab sball")
+
+-- Использовать существующие буферы при переключении
+vim.opt.switchbuf = { "useopen" }
+
+-- Отключаем звуковой сигнал и мигание
+vim.opt.visualbell = true
+vim.opt.errorbells = false
+
+-- Кодировка
+vim.opt.encoding = "utf-8"
+
+-- Статусбар всегда отображается
+vim.opt.laststatus = 2
+
+-- Инкрементальный поиск + подсветка
+vim.opt.incsearch = true
+vim.opt.hlsearch = true
+
+-- Номера строк
+vim.opt.number = true
+
+-- Отступ от края экрана при прокрутке
+vim.opt.scrolloff = 5
+
+-- ❌ Отключаем backup и swap-файлы
+vim.opt.backup = false
+vim.opt.writebackup = false
+vim.opt.swapfile = false
+
+-- ??️ GUI options (если есть GUI)
+vim.opt.guioptions = vim.opt.guioptions - "T"  -- убираем тулбар
+-- Если хочешь убрать меню и скроллбар — раскомментируй:
+-- vim.opt.guioptions = vim.opt.guioptions - "m"
+-- vim.opt.guioptions = vim.opt.guioptions - "r"
+
+-- ?? Настройки табов
+vim.opt.smarttab = true
+vim.opt.tabstop = 8
+
+-- Максимальная ширина строки
+vim.opt.textwidth = 120
+vim.opt.colorcolumn = "120"
+
+-- Цвет линии ограничения
+vim.api.nvim_set_hl(0, "ColorColumn", { ctermbg = "black" })
+
+-- ?? Автокоманды: подсветка 120+ символов и отключение переноса строк
+vim.api.nvim_create_augroup("vimrc_autocmds", { clear = true })
+vim.api.nvim_create_autocmd("FileType", {
+  group = "vimrc_autocmds",
+  pattern = { "ruby", "python", "javascript", "c", "cpp" },
+  callback = function()
+    vim.cmd("highlight Excess ctermbg=DarkGrey guibg=Black")
+    vim.cmd("match Excess /\\%120v.*/")
+    vim.opt.wrap = false
+  end,
+})
+
+-- ==============================
+-- Поддержка языков
+-- ==============================
+
+-- JS: включить dom/html/css расширения
+vim.g.javascript_enable_domhtmlcss = 1
+
+-- HTML: отключить рендеринг
+vim.g.html_no_rendering = 1
+
+-- Закрытие тегов
+vim.g.closetag_default_xml = 1
+vim.g.sparkupNextMapping = "<c-l>"
+
+-- === Python ===
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "python" },
+  callback = function()
+    vim.opt_local.expandtab = true
+    vim.opt_local.shiftwidth = 4
+    vim.opt_local.tabstop = 8
+    vim.opt_local.softtabstop = 4
+    vim.opt_local.smartindent = true
+    vim.opt_local.formatoptions:append("croq")
+    vim.bo.cinwords = "if,elif,else,for,while,try,except,finally,def,class,with"
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "pyrex" },
+  callback = function()
+    vim.opt_local.expandtab = true
+    vim.opt_local.shiftwidth = 4
+    vim.opt_local.tabstop = 8
+    vim.opt_local.softtabstop = 4
+    vim.opt_local.smartindent = true
+    vim.bo.cinwords = "if,elif,else,for,while,try,except,finally,def,class,with"
+  end,
+})
+
+-- === JavaScript ===
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "javascript",
+  callback = function()
+    vim.bo.omnifunc = "javascriptcomplete#CompleteJS"
+  end,
+})
+
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+  pattern = "*.json",
+  callback = function()
+    vim.bo.filetype = "javascript"
+  end,
+})
+
+-- === HTML ===
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "html",
+  callback = function()
+    vim.bo.omnifunc = "htmlcomplete#CompleteTags"
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "html", "xhtml", "xml", "htmldjango", "htmljinja", "eruby", "mako" },
+  callback = function()
+    vim.opt_local.expandtab = true
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.tabstop = 2
+    vim.opt_local.softtabstop = 2
+    vim.b.closetag_html_style = 1
+    vim.cmd("source ~/.vim/scripts/closetag.vim")
+  end,
+})
+
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+  pattern = "*.rhtml",
+  callback = function()
+    vim.bo.filetype = "eruby"
+  end,
+})
+
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+  pattern = "*.mako",
+  callback = function()
+    vim.bo.filetype = "mako"
+  end,
+})
+
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+  pattern = "*.tmpl",
+  callback = function()
+    vim.bo.filetype = "htmljinja"
+  end,
+})
+
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+  pattern = "*.py_tmpl",
+  callback = function()
+    vim.bo.filetype = "python"
+  end,
+})
+
+-- === CSS ===
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "css",
+  callback = function()
+    vim.bo.omnifunc = "csscomplete#CompleteCSS"
+    vim.opt_local.expandtab = true
+    vim.opt_local.shiftwidth = 4
+    vim.opt_local.tabstop = 4
+    vim.opt_local.softtabstop = 4
+  end,
+})
+
+-- Горячая клавиша <F9> для запуска python-файла (в normal и insert режиме)
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "python",
+  callback = function()
+    vim.api.nvim_buf_set_keymap(0, "n", "<F9>", ":w<CR>:exec '!python3' shellescape(@%, 1)<CR>", { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(0, "i", "<F9>", "<Esc>:w<CR>:exec '!python3' shellescape(@%, 1)<CR>", { noremap = true, silent = true })
+  end,
+})
+
+-- Отключаем движение по hjkl (например, чтобы переучивать себя или в tmux)
+vim.keymap.set("n", "h", "<nop>", { silent = true })
+vim.keymap.set("n", "j", "<nop>", { silent = true })
+vim.keymap.set("n", "k", "<nop>", { silent = true })
+vim.keymap.set("n", "l", "<nop>", { silent = true })
+
+-- Перемещение строк (Alt + j/k)
+vim.keymap.set("i", "<A-j>", "<Esc>:m .+1<CR>==gi")
+vim.keymap.set("i", "<A-k>", "<Esc>:m .-2<CR>==gi")
+vim.keymap.set("v", "<A-j>", ":m '>+1<CR>gv=gv")
+vim.keymap.set("v", "<A-k>", ":m '<-2<CR>gv=gv")
+
+-- Перемещение окон
+vim.keymap.set("n", "<A-h>", "<C-W>H")
+vim.keymap.set("n", "<A-j>", "<C-W>J")
+vim.keymap.set("n", "<A-k>", "<C-W>K")
+vim.keymap.set("n", "<A-l>", "<C-W>L")
+
+-- Навигация между сплитами
+vim.keymap.set("n", "<C-h>", "<C-w>h")
+vim.keymap.set("n", "<C-j>", "<C-w>j")
+vim.keymap.set("n", "<C-k>", "<C-w>k")
+vim.keymap.set("n", "<C-l>", "<C-w>l")
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "python", "lua", "vim" },
+  callback = function()
+    vim.cmd("highlight Comment ctermfg=Green")
+    vim.cmd("highlight Normal ctermfg=White")
+  end,
+})
+
+-- Setup lazy.nvim
+require("lazy").setup({
+  spec = {
+    -- import your plugins
+    { import = "plugins" },
+  },
+  -- Configure any other settings here. See the documentation for more details.
+  -- colorscheme that will be used when installing plugins.
+  install = { colorscheme = { "habamax" } },
+  -- automatically check for plugin updates
+  checker = { enabled = true },
+})
