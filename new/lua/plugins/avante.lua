@@ -43,6 +43,12 @@ return {
         },
       },
     },
+    windows = {
+      input = {
+        prefix = "> ", -- prefix for input
+        height = 10, -- height of the input window
+      },
+    },
   },
   dependencies = {
     "nvim-lua/plenary.nvim",
